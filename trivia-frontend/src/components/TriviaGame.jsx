@@ -51,7 +51,7 @@ export default function TriviaGame() {
             onClick={() => handleSelect(option)}
             style={{
               margin: "8px 0",
-              display: "block",
+              display: "block", 
               padding: "8px 12px",
               border: "1px solid #aaa",
               borderRadius: "6px",
