@@ -3,14 +3,14 @@ export default function HomeButton({ goHome }) {
       <button
         onClick={goHome}
         style={{
-          position: "fixed",
-          top: "15px",
-          right: "15px",
-          padding: "8px 14px",
-          borderRadius: "6px",
+          position: "absolute",
+          top: 20,
+          right: 20,
+          padding: "8px 12px",
+          borderRadius: "8px",
           cursor: "pointer",
-          background: "#eee",
-          border: "1px solid #aaa",
+          border: "1px solid #ccc",
+          fontWeight: "bold",
         }}
       >
         Home

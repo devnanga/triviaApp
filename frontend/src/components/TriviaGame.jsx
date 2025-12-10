@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 export default function TriviaGame() {
   const [questions, setQuestions] = useState([]);
@@ -11,12 +10,9 @@ export default function TriviaGame() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("/data/questions.json");
+        const res = await fetch("/trivia-app/data/questions.json");
         const data = await res.json();
-
-        // shuffle the questions
-        const shuffled = [...data].sort(() => Math.random() - 0.5);
-        setQuestions(shuffled);
+        setQuestions([...data].sort(() => Math.random() - 0.5));
       } catch (err) {
         console.error("Failed to load questions:", err);
       } finally {
@@ -29,91 +25,62 @@ export default function TriviaGame() {
   if (loading) return <p>Loading questions...</p>;
   if (!questions.length) return <p>No questions found.</p>;
 
-  // If quiz is done
   if (index >= questions.length) {
     return (
-      <div style={{ textAlign: "center", marginTop: "2rem" }}>
+      <div style={{ textAlign: "center", marginTop: "3rem" }}>
         <h2>Quiz Complete!</h2>
-        <p style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>
-          Your score: <strong>{score}</strong> / {questions.length}
-        </p>
-
-        <button
-  onClick={() => (window.location.href = "/home")}
-  style={{
-    padding: "10px 14px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    border: "1px solid #888",
-    background: "#eee",
-    fontWeight: "bold",
-  }}
->
-  Return Home
-</button>
-
+        <p>Your score: {score} / {questions.length}</p>
       </div>
     );
   }
 
   const q = questions[index];
-  const options = Array.isArray(q.options) ? q.options : [];
 
   function handleSelect(option) {
     setSelected(option);
-    if (option === q.answer) {
-      setScore((prev) => prev + 1);
-    }
+    if (option === q.answer) setScore((s) => s + 1);
   }
 
   function next() {
     setSelected(null);
-    setIndex((prev) => prev + 1);
+    setIndex((i) => i + 1);
   }
 
   return (
-    <div style={{ marginTop: "2rem" }}>
+    <div style={{ textAlign: "center", marginTop: "3rem" }}>
       <h2>{q.question}</h2>
 
-      <div>
-        {options.map((option) => (
-          <button
-            key={option}
-            onClick={() => handleSelect(option)}
-            disabled={selected !== null}
-            style={{
-              margin: "8px 0",
-              display: "block",
-              padding: "8px 12px",
-              border: "1px solid #aaa",
-              borderRadius: "6px",
-              width: "200px",
-              textAlign: "left",
-              cursor: "pointer",
-              background:
-                selected === null
-                  ? ""
-                  : option === q.answer
-                  ? "lightgreen"
-                  : selected === option
-                  ? "#f99"
-                  : "",
-            }}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
+      {q.options.map((option) => (
+        <button
+          key={option}
+          onClick={() => handleSelect(option)}
+          disabled={selected !== null}
+          style={{
+            margin: "8px auto",
+            display: "block",
+            padding: "10px 14px",
+            width: "240px",
+            borderRadius: "8px",
+            border: "1px solid #aaa",
+            background:
+              !selected ? ""
+              : option === q.answer ? "lightgreen"
+              : selected === option ? "#f88"
+              : "",
+          }}
+        >
+          {option}
+        </button>
+      ))}
 
       {selected && (
         <button
           onClick={next}
           style={{
-            marginTop: 15,
+            marginTop: "15px",
             padding: "8px 12px",
-            borderRadius: "6px",
             cursor: "pointer",
-            border: "1px solid #888",
+            borderRadius: "6px",
           }}
         >
           Next

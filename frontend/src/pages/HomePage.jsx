@@ -1,37 +1,37 @@
 export default function HomePage({ onSelect }) {
     return (
-      <div style={styles.container}>
-        <h1>Welcome!</h1>
+      <div style={{ textAlign: "center", marginTop: "4rem" }}>
+        <h1>StreetMeat Home</h1>
+        <p>Select an option:</p>
   
-        <div style={styles.buttons}>
-          <button style={styles.button} onClick={() => onSelect("facts")}>
-            Fun Facts
-          </button>
+        <button
+          onClick={() => onSelect("trivia")}
+          style={{
+            display: "block",
+            margin: "12px auto",
+            padding: "10px 20px",
+            borderRadius: "8px",
+            border: "1px solid #777",
+            cursor: "pointer",
+          }}
+        >
+          🎮 Play Trivia
+        </button>
   
-          <button style={styles.button} onClick={() => onSelect("trivia")}>
-            Trivia Game
-          </button>
-        </div>
+        <button
+          onClick={() => onSelect("facts")}
+          style={{
+            display: "block",
+            margin: "12px auto",
+            padding: "10px 20px",
+            borderRadius: "8px",
+            border: "1px solid #777",
+            cursor: "pointer",
+          }}
+        >
+          💡 Fun Facts
+        </button>
       </div>
     );
   }
-  
-  const styles = {
-    container: {
-      textAlign: "center",
-      marginTop: "4rem",
-    },
-    buttons: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "1rem",
-      marginTop: "2rem",
-    },
-    button: {
-      padding: "10px 18px",
-      fontSize: "1.1rem",
-      borderRadius: "8px",
-      cursor: "pointer",
-    },
-  };
   
