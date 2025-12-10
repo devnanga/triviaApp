@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // <- import
 
 export default function TriviaGame() {
+  const navigate = useNavigate(); // <- initialize
+
   const [questions, setQuestions] = useState([]);
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -10,8 +13,10 @@ export default function TriviaGame() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("/trivia-app/data/questions.json");
+        const BASE = import.meta.env.BASE_URL || "/";
+        const res = await fetch(`${BASE}data/questions.json`);
         const data = await res.json();
+
         setQuestions([...data].sort(() => Math.random() - 0.5));
       } catch (err) {
         console.error("Failed to load questions:", err);
@@ -30,6 +35,18 @@ export default function TriviaGame() {
       <div style={{ textAlign: "center", marginTop: "3rem" }}>
         <h2>Quiz Complete!</h2>
         <p>Your score: {score} / {questions.length}</p>
+
+        <button
+          onClick={() => navigate("/home")} // <- now works
+          style={{
+            marginTop: 20,
+            padding: "8px 14px",
+            borderRadius: "6px",
+            cursor: "pointer",
+          }}
+        >
+          Return Home
+        </button>
       </div>
     );
   }
@@ -77,7 +94,7 @@ export default function TriviaGame() {
         <button
           onClick={next}
           style={{
-            marginTop: "15px",
+            marginTop: 15,
             padding: "8px 12px",
             cursor: "pointer",
             borderRadius: "6px",

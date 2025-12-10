@@ -1,20 +1,13 @@
-export default function HomeButton({ goHome }) {
-    return (
-      <button
-        onClick={goHome}
-        style={{
-          position: "absolute",
-          top: 20,
-          right: 20,
-          padding: "8px 12px",
-          borderRadius: "8px",
-          cursor: "pointer",
-          border: "1px solid #ccc",
-          fontWeight: "bold",
-        }}
-      >
-        Home
-      </button>
-    );
-  }
-  
+import { Link } from "react-router-dom";
+
+export default function HomeButton() {
+  return (
+    <div style={{ position: "absolute", top: 20, right: 20 }}>
+      <Link to="/home">
+        <button style={{ padding: "6px 12px", cursor: "pointer" }}>
+          Home
+        </button>
+      </Link>
+    </div>
+  );
+}

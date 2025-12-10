@@ -1,13 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/streetmeat.jpg";
 
 export default function LoginPage({ onLogin }) {
   const [name, setName] = useState("");
+  const navigate = useNavigate(); // <-- add this
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!name.trim()) return;
-    onLogin(name);
+
+    onLogin(name);       // set the user
+    navigate("/home");   // navigate to home page
   }
 
   return (
@@ -50,9 +54,6 @@ export default function LoginPage({ onLogin }) {
     </div>
   );
 }
-
-
-
 
 
 
