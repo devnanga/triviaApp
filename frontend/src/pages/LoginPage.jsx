@@ -1,17 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/streetmeat.jpg";
 
 export default function LoginPage({ onLogin }) {
   const [name, setName] = useState("");
-  const navigate = useNavigate(); // <-- add this
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  // Load users from JSON on mount
+  useEffect(() => {
+    async function loadUsers() {
+      try {
+        const BASE = import.meta.env.BASE_URL || "/";
+        const res = await fetch(`${BASE}data/users.json`);
+        const data = await res.json();
+        setUsers(data.map((u) => u.toLowerCase()));
+      } catch (err) {
+        console.error("Failed to load users:", err);
+      }
+    }
+    loadUsers();
+  }, []);
+  
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!name.trim()) return;
 
-    onLogin(name);       // set the user
-    navigate("/home");   // navigate to home page
+    if (users.includes(name.trim().toLowerCase())) {
+      onLogin(name);
+      navigate("/home");
+    } else {
+      setError("Respectfully, hymc :)");
+    }
   }
 
   return (
@@ -51,11 +73,11 @@ export default function LoginPage({ onLogin }) {
           Enter
         </button>
       </form>
+
+      {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
     </div>
   );
 }
-
-
 
 
 

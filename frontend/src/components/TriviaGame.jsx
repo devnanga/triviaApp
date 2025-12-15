@@ -1,107 +1,200 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // <- import
+import { useNavigate } from "react-router-dom";
+import HomeButton from "./HomeButton";
 
 export default function TriviaGame() {
-  const navigate = useNavigate(); // <- initialize
+  const navigate = useNavigate();
 
-  const [questions, setQuestions] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [selected, setSelected] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [songs, setSongs] = useState([]);
+  const [currentSong, setCurrentSong] = useState(null);
+  const [lyricsSnippet, setLyricsSnippet] = useState("");
+  const [artistGuess, setArtistGuess] = useState("");
+  const [songGuess, setSongGuess] = useState("");
+  const [showAnswer, setShowAnswer] = useState(false);
 
+  const [artistSuggestions, setArtistSuggestions] = useState([]);
+  const [songSuggestions, setSongSuggestions] = useState([]);
+
+  const [score, setScore] = useState({ correct: 0, total: 0 });
+
+  // Load songs with lyrics from public folder and filter null lyrics
   useEffect(() => {
-    async function load() {
+    async function loadSongs() {
       try {
         const BASE = import.meta.env.BASE_URL || "/";
-        const res = await fetch(`${BASE}data/questions.json`);
+        const res = await fetch(`${BASE}data/songs_with_lyrics_final.json`);
         const data = await res.json();
-
-        setQuestions([...data].sort(() => Math.random() - 0.5));
+        const filtered = data.filter((s) => s.lyrics_snippet); // skip null lyrics
+        setSongs(filtered);
       } catch (err) {
-        console.error("Failed to load questions:", err);
-      } finally {
-        setLoading(false);
+        console.error("Failed to load songs:", err);
       }
     }
-    load();
+    loadSongs();
   }, []);
 
-  if (loading) return <p>Loading questions...</p>;
-  if (!questions.length) return <p>No questions found.</p>;
+  // Pick a random song
+  function nextSong() {
+    setShowAnswer(false);
+    setArtistGuess("");
+    setSongGuess("");
 
-  if (index >= questions.length) {
-    return (
-      <div style={{ textAlign: "center", marginTop: "3rem" }}>
-        <h2>Quiz Complete!</h2>
-        <p>Your score: {score} / {questions.length}</p>
+    if (!songs.length) return;
 
-        <button
-          onClick={() => navigate("/home")} // <- now works
-          style={{
-            marginTop: 20,
-            padding: "8px 14px",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          Return Home
-        </button>
-      </div>
-    );
+    const song = songs[Math.floor(Math.random() * songs.length)];
+    setCurrentSong(song);
+
+    let snippet = song.lyrics_snippet || "";
+    let lines = snippet.split("\n").filter((l) => l.trim() !== "");
+    let displaySnippet = lines.slice(0, 3).join("\n");
+
+    if (displaySnippet.length < 60 && snippet.length > 60) {
+      displaySnippet = snippet.slice(0, 60);
+    }
+
+    setLyricsSnippet(displaySnippet);
   }
 
-  const q = questions[index];
-
-  function handleSelect(option) {
-    setSelected(option);
-    if (option === q.answer) setScore((s) => s + 1);
+  function checkGuess() {
+    if (!currentSong) return;
+  
+    let points = 0;
+    if (artistGuess.trim().toLowerCase() === currentSong.artist.toLowerCase()) points += 0.5;
+    if (songGuess.trim().toLowerCase() === currentSong.title.toLowerCase()) points += 0.5;
+  
+    setScore((prev) => ({
+      correct: prev.correct + points,
+      total: prev.total + 1, // total attempts still increments by 1 per song
+    }));
+  
+    setShowAnswer(true);
   }
+  
+  useEffect(() => {
+    if (songs.length) nextSong();
+  }, [songs]);
 
-  function next() {
-    setSelected(null);
-    setIndex((i) => i + 1);
-  }
+  // Autocomplete for artist
+  useEffect(() => {
+    if (!artistGuess) return setArtistSuggestions([]);
+    const matches = songs
+      .map((s) => s.artist)
+      .filter((a) => a.toLowerCase().includes(artistGuess.toLowerCase()));
+    setArtistSuggestions([...new Set(matches)]);
+  }, [artistGuess, songs]);
+
+  // Autocomplete for song title
+  useEffect(() => {
+    if (!songGuess) return setSongSuggestions([]);
+    const matches = songs
+      .map((s) => s.title)
+      .filter((t) => t.toLowerCase().includes(songGuess.toLowerCase()));
+    setSongSuggestions([...new Set(matches)]);
+  }, [songGuess, songs]);
 
   return (
     <div style={{ textAlign: "center", marginTop: "3rem" }}>
-      <h2>{q.question}</h2>
+      <HomeButton />
 
-      {q.options.map((option) => (
-        <button
-          key={option}
-          onClick={() => handleSelect(option)}
-          disabled={selected !== null}
-          style={{
-            margin: "8px auto",
-            display: "block",
-            padding: "10px 14px",
-            width: "240px",
-            borderRadius: "8px",
-            border: "1px solid #aaa",
-            background:
-              !selected ? ""
-              : option === q.answer ? "lightgreen"
-              : selected === option ? "#f88"
-              : "",
-          }}
-        >
-          {option}
-        </button>
-      ))}
+      <h2>Guess the Song & Artist!</h2>
 
-      {selected && (
+      <div style={{ marginBottom: "1rem" }}>
+        <strong>Score:</strong> {score.correct} / {score.total}
+      </div>
+
+      <pre style={{ whiteSpace: "pre-wrap", marginBottom: "1rem" }}>
+        {lyricsSnippet}
+      </pre>
+
+      <div style={{ position: "relative", marginBottom: 10 }}>
+        <input
+          type="text"
+          placeholder="Guess artist..."
+          value={artistGuess}
+          onChange={(e) => setArtistGuess(e.target.value)}
+          style={{ marginRight: 10, padding: "6px", width: "200px" }}
+        />
+        {artistSuggestions.length > 0 && (
+          <div
+            style={{
+              position: "absolute",
+              background: "#fff",
+              border: "1px solid #ccc",
+              width: "200px",
+              maxHeight: "120px",
+              overflowY: "auto",
+              zIndex: 10,
+            }}
+          >
+            {artistSuggestions.map((a) => (
+              <div
+                key={a}
+                style={{ padding: "4px", cursor: "pointer" }}
+                onClick={() => {
+                  setArtistGuess(a);
+                  setArtistSuggestions([]);
+                }}
+              >
+                {a}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div style={{ position: "relative", marginBottom: 10 }}>
+        <input
+          type="text"
+          placeholder="Guess song..."
+          value={songGuess}
+          onChange={(e) => setSongGuess(e.target.value)}
+          style={{ padding: "6px", width: "200px" }}
+        />
+        {songSuggestions.length > 0 && (
+          <div
+            style={{
+              position: "absolute",
+              background: "#fff",
+              border: "1px solid #ccc",
+              width: "200px",
+              maxHeight: "120px",
+              overflowY: "auto",
+              zIndex: 10,
+            }}
+          >
+            {songSuggestions.map((s) => (
+              <div
+                key={s}
+                style={{ padding: "4px", cursor: "pointer" }}
+                onClick={() => {
+                  setSongGuess(s);
+                  setSongSuggestions([]);
+                }}
+              >
+                {s}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div>
         <button
-          onClick={next}
-          style={{
-            marginTop: 15,
-            padding: "8px 12px",
-            cursor: "pointer",
-            borderRadius: "6px",
-          }}
+          onClick={checkGuess}
+          style={{ marginRight: 10, padding: "6px 12px" }}
         >
-          Next
+          Check Guess
         </button>
+        <button onClick={nextSong} style={{ padding: "6px 12px" }}>
+          Next Song
+        </button>
+      </div>
+
+      {showAnswer && currentSong && (
+        <div style={{ marginTop: 20 }}>
+          <strong>Correct Artist:</strong> {currentSong.artist} <br />
+          <strong>Correct Song:</strong> {currentSong.title}
+        </div>
       )}
     </div>
   );

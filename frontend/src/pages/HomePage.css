@@ -1,0 +1,118 @@
+/* Global styles */
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    background: #0a0a0f;
+    overflow-x: hidden;
+    color: #39ff14; /* Fluoro green text */
+  }
+  
+  /* Animated particle background */
+  .particles {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: radial-gradient(#39ff14 1px, transparent 1px);
+    background-size: 20px 20px;
+    z-index: 0;
+    opacity: 0.05;
+    pointer-events: none;
+  }
+  
+  /* Main container */
+  .home-container {
+    position: relative;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    z-index: 1;
+  }
+  
+  /* Title with neon glow and pulse */
+  .title {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    color: #39ff14;
+    text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14, 0 0 20px #39ff14;
+    animation: glow 1.8s ease-in-out infinite alternate;
+  }
+  
+  @keyframes glow {
+    0% { text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14, 0 0 20px #39ff14; }
+    100% { text-shadow: 0 0 20px #39ff14, 0 0 40px #39ff14, 0 0 60px #39ff14; }
+  }
+  
+  /* Dropdowns */
+  .dropdowns {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  
+  select {
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #39ff14;
+    background-color: #111123;
+    color: #39ff14;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  select:hover {
+    background-color: #1a1a2b;
+  }
+  
+  /* Games */
+  .games, .fun-pages {
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 420px;
+  }
+  
+  .game {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .game span {
+    display: block;
+    font-size: 0.85rem;
+    color: #39ff1488;
+    margin-top: 0.2rem;
+  }
+  
+  /* Neon buttons with hover animation */
+  button {
+    margin: 0.3rem 0;
+    padding: 0.6rem 1.6rem;
+    border-radius: 8px;
+    border: 1px solid #39ff14;
+    background-color: #111123;
+    color: #39ff14;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14;
+  }
+  
+  button:hover {
+    background-color: #1a1a2b;
+    box-shadow: 0 0 15px #39ff14, 0 0 25px #39ff14, 0 0 40px #39ff14;
+    transform: scale(1.07);
+  }
+  
+  /* Fun pages buttons */
+  .fun-pages button {
+    margin-top: 0.5rem;
+  }
+  
